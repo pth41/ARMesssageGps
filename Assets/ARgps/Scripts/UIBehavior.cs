@@ -17,7 +17,7 @@ public class UIBehavior : MonoBehaviour {
 	void Awake(){
 		_instance = this;
 		HomeScreen.SetActive (false);
-		MessageScreen.SetActive (false);
+		MessageScreen.SetActive (true);
 	}
 
 	public void ShowUI(){
@@ -48,9 +48,9 @@ public class UIBehavior : MonoBehaviour {
 			//MessageService.Instance.SaveMessage (lat, lon, messageText.text);
 
 		messageText.text = "";
-		HomeScreen.SetActive (true);
-		MessageScreen.SetActive (false);
-		StartCoroutine (DelayLoadMessagesRoutine ());
+		//HomeScreen.SetActive (true);
+		//MessageScreen.SetActive (false);
+		//StartCoroutine (DelayLoadMessagesRoutine ());
 	}
 
 	IEnumerator DelayLoadMessagesRoutine(){

@@ -23,7 +23,9 @@ namespace GoogleARCore.ARgps
     using System.Collections.Generic;
     using GoogleARCore;
     using UnityEngine;
+	using UnityEngine.UI;
     using UnityEngine.Rendering;
+	using UnityEngine.EventSystems;
 
 #if UNITY_EDITOR
     // Set up touch input propagation while using Instant Preview in the editor.
@@ -48,12 +50,21 @@ namespace GoogleARCore.ARgps
         /// <summary>
         /// A model to place when a raycast from a user touch hits a plane.
         /// </summary>
-        public GameObject AndyAndroidPrefab;
+        public GameObject MessagePrefab;
 
         /// <summary>
         /// A gameobject parenting UI for displaying the "searching for planes" snackbar.
         /// </summary>
         public GameObject SearchingForPlaneUI;
+
+		// 메시지입력UI
+		public GameObject MessageScreen;
+
+		// 
+		public Text messageText;
+
+		// 터치확인
+		private bool touchOn;
 
         /// <summary>
         /// A list to hold new planes ARCore began tracking in the current frame. This object is used across
@@ -72,11 +83,13 @@ namespace GoogleARCore.ARgps
         /// </summary>
         private bool m_IsQuitting = false;
 
+
         /// <summary>
         /// The Unity Update() method.
         /// </summary>
         public void Update()
         {
+
             // Exit the app when the 'back' button is pressed.
             if (Input.GetKey(KeyCode.Escape))
             {
@@ -128,10 +141,26 @@ namespace GoogleARCore.ARgps
 
             // If the player has not touched the screen, we are done with this update.
             Touch touch;
-            if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
+			// 터치 확인
+			if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
             {
+				touchOn = false;
+				MessageScreen.SetActive (true);
                 return;
             }
+			else if (Input.touchCount > 0) {    //터치가 1개 이상이면.
+				for (int i=0; i<Input.touchCount; i++) {
+					if (EventSystem.current.IsPointerOverGameObject (i) == false) {
+						if (touch.phase == TouchPhase.Began) {    //해당 터치가 시작됐다면.
+							touchOn = true;	// 터치 온
+						}
+					}
+				}
+			}
+
+			if (touchOn == true) {
+				MessageScreen.SetActive (true);
+			}
 
             // Raycast against the location the player touched to search for planes.
             TrackableHit hit;
@@ -140,7 +169,11 @@ namespace GoogleARCore.ARgps
 
             if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
             {
-                var andyObject = Instantiate(AndyAndroidPrefab, hit.Pose.position, hit.Pose.rotation);
+				var msgObject = Instantiate(MessagePrefab, hit.Pose.position, hit.Pose.rotation);
+
+				//Message thisMessage = msgObject.GetComponent<Message> ();
+				//thisMessage.text = messageText.text;
+				msgObject.GetComponent<Message> ().SetText (messageText.text);
 
                 // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
                 // world evolves.
@@ -154,11 +187,11 @@ namespace GoogleARCore.ARgps
                     cameraPositionSameY.y = hit.Pose.position.y;
 
                     // Have Andy look toward the camera respecting his "up" perspective, which may be from ceiling.
-                    andyObject.transform.LookAt(cameraPositionSameY, andyObject.transform.up);
+                    msgObject.transform.LookAt(cameraPositionSameY, msgObject.transform.up);
                 }
 
                 // Make Andy model a child of the anchor.
-                andyObject.transform.parent = anchor.transform;
+                msgObject.transform.parent = anchor.transform;
             }
         }
 
