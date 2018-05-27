@@ -13,10 +13,11 @@ public class UIBehavior : MonoBehaviour {
 	public GameObject HomeScreen;
 	public GameObject MessageScreen;
 	public Text messageText;
+	public bool delay;
 
 	void Awake(){
 		_instance = this;
-		HomeScreen.SetActive (false);
+		//HomeScreen.SetActive (false);
 		MessageScreen.SetActive (true);
 	}
 
@@ -46,10 +47,11 @@ public class UIBehavior : MonoBehaviour {
 			//double lon = 현재 디바이스 위치의 Longitude
 
 			//MessageService.Instance.SaveMessage (lat, lon, messageText.text);
+		delay = true;
 
-		messageText.text = "";
+		//messageText.text = "";
 		//HomeScreen.SetActive (true);
-		//MessageScreen.SetActive (false);
+		MessageScreen.SetActive (false);
 		//StartCoroutine (DelayLoadMessagesRoutine ());
 	}
 

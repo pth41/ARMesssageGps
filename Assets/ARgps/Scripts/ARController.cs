@@ -39,7 +39,8 @@ namespace GoogleARCore.ARgps
     {
         /// <summary>
         /// The first-person camera being used to render the passthrough camera image (i.e. AR background).
-        /// </summary>
+        /// </summary> 
+
         public Camera FirstPersonCamera;
 
         /// <summary>
@@ -145,10 +146,11 @@ namespace GoogleARCore.ARgps
 			if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
             {
 				touchOn = false;
-				MessageScreen.SetActive (true);
+				MessageScreen.SetActive (false);
                 return;
             }
-			else if (Input.touchCount > 0) {    //터치가 1개 이상이면.
+
+			if (Input.touchCount > 0) {    //터치가 1개 이상이면.
 				for (int i=0; i<Input.touchCount; i++) {
 					if (EventSystem.current.IsPointerOverGameObject (i) == false) {
 						if (touch.phase == TouchPhase.Began) {    //해당 터치가 시작됐다면.
@@ -160,6 +162,7 @@ namespace GoogleARCore.ARgps
 
 			if (touchOn == true) {
 				MessageScreen.SetActive (true);
+				UIBehavior.Instance.delay = false;
 			}
 
             // Raycast against the location the player touched to search for planes.
@@ -167,9 +170,9 @@ namespace GoogleARCore.ARgps
             TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
                 TrackableHitFlags.FeaturePointWithSurfaceNormal;
 
-            if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+			if (UIBehavior.Instance.delay == true && Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
             {
-				var msgObject = Instantiate(MessagePrefab, hit.Pose.position, hit.Pose.rotation);
+				GameObject msgObject = Instantiate(MessagePrefab, hit.Pose.position, hit.Pose.rotation);
 
 				//Message thisMessage = msgObject.GetComponent<Message> ();
 				//thisMessage.text = messageText.text;

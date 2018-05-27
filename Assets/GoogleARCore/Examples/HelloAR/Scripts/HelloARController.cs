@@ -55,6 +55,7 @@ namespace GoogleARCore.HelloAR
         /// </summary>
         public GameObject SearchingForPlaneUI;
 
+
         /// <summary>
         /// A list to hold new planes ARCore began tracking in the current frame. This object is used across
         /// the application to avoid per-frame allocations.
@@ -140,7 +141,11 @@ namespace GoogleARCore.HelloAR
 
             if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
             {
-                var andyObject = Instantiate(AndyAndroidPrefab, hit.Pose.position, hit.Pose.rotation);
+				var andyObject = Instantiate(AndyAndroidPrefab, hit.Pose.position, hit.Pose.rotation);
+
+				Message message = andyObject.GetComponent<Message> ();
+				message.text = UIBehavior.Instance.messageText.text;
+				andyObject.GetComponent<Message> ().SetText(message.text);
 
                 // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
                 // world evolves.
